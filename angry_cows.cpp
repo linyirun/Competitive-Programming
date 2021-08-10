@@ -1,3 +1,4 @@
+// http://www.usaco.org/index.php?page=viewproblem2&cpid=597
 #include <bits/stdc++.h>
 #define ll long long
 #define ld long double
