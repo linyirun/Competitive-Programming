@@ -1,0 +1,64 @@
+// http://www.usaco.org/index.php?page=viewproblem2&cpid=811
+#include <bits/stdc++.h>
+#define ll long long
+#define ld long double
+#define pii pair<int, int>
+#define pll pair<ll, ll>
+using namespace std;
+ 
+#define MOD 1000000007
+#define INF 10000000
+#define MAX 255
+
+int n, b;
+vector<int> snow;
+vector<pii> shoes;
+bool vis[MAX][MAX];
+
+void dfs(int pos, int curr) {
+    if (curr >= b || vis[pos][curr]) return;
+    vis[pos][curr] = true;
+    if (pos == n - 1) return;
+    
+    int withstand = shoes[curr].first, step_size = shoes[curr].second;
+    if (withstand >= snow[pos]) {
+        for (int i = pos + 1; i <= min(n - 1, pos + step_size); i++) {
+            if (snow[i] <= withstand) dfs(i, curr);
+        }
+    }
+    // go to next
+    dfs(pos, curr + 1);
+    
+}
+
+int32_t main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+//        freopen("snowboots.in", "r", stdin);
+//        freopen("snowboots.out", "w", stdout);
+    
+    cin >> n >> b;
+    memset(vis, false, sizeof(vis));
+    snow.resize(n);
+    shoes.resize(b);
+    
+    for (int i = 0; i < n; i++) cin >> snow[i];
+    for (int i = 0; i < b; i++) {
+        int d, s;
+        cin >> d >> s;
+        shoes[i] = {d, s};
+    }
+    
+    dfs(0, 0);
+    int best = n;
+    for (int i = 0; i < n; i++) {
+        if (vis[n - 1][i]) {
+            best = i;
+            break;
+        }
+    }
+    
+    cout << best << '\n';
+    
+}
