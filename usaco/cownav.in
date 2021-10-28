@@ -1,0 +1,87 @@
+// http://www.usaco.org/index.php?page=viewproblem2&cpid=695
+#include <bits/stdc++.h>
+#define ll long long
+#define ld long double
+#define pii pair<int, int>
+#define pll pair<ll, ll>
+using namespace std;
+
+int dx[] = {-1, 0, 1, 0}, dy[] = {0, 1, 0, -1};
+
+const int MAX = 21;
+
+int vis[MAX][MAX][MAX][MAX][4];
+
+struct info {
+    int row1, col1, row2, col2, dir;
+};
+
+int n;
+vector<vector<char>> grid;
+bool is_safe(int row, int col) {
+    return row >= 0 && row < n && col >= 0 && col < n && grid[row][col] == 'E';
+}
+
+int32_t main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    freopen("cownav.in", "r", stdin);
+    freopen("cownav.out", "w", stdout);
+    
+    memset(vis, -1, sizeof(vis));
+    
+    cin >> n;
+    grid = vector<vector<char>>(n, vector<char>(n));
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) cin >> grid[i][j];
+    }
+    
+    queue<info> q;
+    q.push({n - 1, 0, n - 1, 0, 0});
+    vis[n - 1][0][n - 1][0][0] = 0;
+    while (!q.empty()) {
+        info d = q.front();
+        q.pop();
+        int x1 = d.row1, y1 = d.col1, x2 = d.row2, y2 = d.col2, dir = d.dir;
+        
+        // move forward
+        int destx1 = x1, desty1 = y1, destx2 = x2, desty2 = y2;
+        if (is_safe(destx1 + dx[dir], desty1 + dy[dir]) && (x1 != 0 || y1 != n - 1)) {
+            destx1 += dx[dir];
+            desty1 += dy[dir];
+        }
+        
+        int second_dir = (dir + 1) % 4;
+        if (is_safe(destx2 + dx[second_dir], desty2 + dy[second_dir]) && (x2 != 0 || y2 != n - 1)) {
+            destx2 += dx[second_dir];
+            desty2 += dy[second_dir];
+        }
+        
+        if (vis[destx1][desty1][destx2][desty2][dir] == -1) {
+            vis[destx1][desty1][destx2][desty2][dir] = vis[x1][y1][x2][y2][dir] + 1;
+            q.push({destx1, desty1, destx2, desty2, dir});
+        }
+        
+        // turn right
+        if (vis[x1][y1][x2][y2][(dir + 1) % 4] == -1) {
+            vis[x1][y1][x2][y2][(dir + 1) % 4] = vis[x1][y1][x2][y2][dir] + 1;
+            q.push({x1, y1, x2, y2, (dir + 1) % 4});
+            
+        }
+        
+        // turn left
+        if (vis[x1][y1][x2][y2][(dir + 3) % 4] == -1) {
+            vis[x1][y1][x2][y2][(dir + 3) % 4] = vis[x1][y1][x2][y2][dir] + 1;
+            q.push({x1, y1, x2, y2, (dir + 3) % 4});
+        }
+    }
+    
+    int best = INT_MAX;
+    for (int i = 0; i < 4; i++) {
+        if (vis[0][n - 1][0][n - 1][i] != -1) best = min(best, vis[0][n - 1][0][n - 1][i]);
+    }
+    cout << best << '\n';
+    
+}
